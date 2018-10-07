@@ -4,6 +4,38 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <string.h>
+//#include <ArduCAM.h>
+// #include <SPI.h>
+// #include "memorysaver.h"
+// #include <Wire.h>
+
+// //This demo can only work on OV2640_MINI_2MP or ARDUCAM_SHIELD_V2 platform.
+// #if !(defined (OV2640_MINI_2MP)||(defined (ARDUCAM_SHIELD_V2) && defined (OV2640_CAM)))
+// #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
+// #endif
+
+// // set GPIO16 as the slave select :
+// const int CS = 14;
+
+// String errMsg = "";
+
+// ArduCAM myCAM(OV2640, CS);
+
+// int fileTotalKB = 0;
+// int fileUsedKB = 0; int fileCount = 0;
+// String errMsg = "";
+// int imgMode = 1; // 0: stream  1: capture
+// int resolution = 3;
+// // resolutions:
+// // 0 = 160x120
+// // 1 = 176x144
+// // 2 = 320x240
+// // 3 = 352x288
+// // 4 = 640x480
+// // 5 = 800x600
+// // 6 = 1024x768
+// // 7 = 1280x1024
+// // 8 = 1600x1200
 
 const char* ssid = "TISCALI-016D20";
 const char* password = "GPON00016D202";
@@ -72,7 +104,105 @@ void setup() {
   
     if (espClient.loadPrivateKey(private_key)) Serial.println("private key loaded");
     else Serial.println("private key not loaded");
+
+  //   // check for properties file
+  //   File f = SPIFFS.open(fName, "r");
+
+  //   if (!f) {
+  //     // no file exists so lets format and create a properties file
+  //     Serial.println("Please wait 30 secs for SPIFFS to be formatted");
+
+  //     SPIFFS.format();
+
+  //     Serial.println("Spiffs formatted");
+
+  //     f = SPIFFS.open(fName, "w");
+  //     if (!f) {
+  //     Serial.println("properties file open failed");
+  //     }
+  //     else
+  //     {
+  //     // write the defaults to the properties file
+  //     Serial.println("====== Writing to properties file =========");
+
+  //     f.println(resolution);
+
+  //     f.close();
+  //     }
+
+  //   }
+  //   else
+  //   {
+  //     // if the properties file exists on startup,  read it and set the defaults
+  //     Serial.println("Properties file exists. Reading.");
+
+  //     while (f.available()) {
+
+  //     // read line by line from the file
+  //     String str = f.readStringUntil('\n');
+
+  //     Serial.println(str);
+
+  //     resolution = str.toInt();
+
+  //     }
+
+  //     f.close();
+  //   }
+
+
+  //   uint8_t vid, pid;
+  //   uint8_t temp;
+
+  //   #if defined(__SAM3X8E__)
+  //     Wire1.begin();
+  //   #else
+  //     Wire.begin();
+  //   #endif
   }
+
+  // // set the CS as an output:
+	// pinMode(CS, OUTPUT);
+
+  // // initialize SPI:
+	// SPI.begin();
+	// SPI.setFrequency(4000000); //4MHz
+
+	// //Check if the ArduCAM SPI bus is OK
+	// myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
+	// temp = myCAM.read_reg(ARDUCHIP_TEST1);
+	// if (temp != 0x55) {
+	// 	Serial.println("SPI1 interface Error!");
+	// }
+
+	// //Check if the camera module type is OV2640
+	// myCAM.wrSensorReg8_8(0xff, 0x01);
+	// myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
+	// myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
+	// if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 )))
+	// 	Serial.println("Can't find OV2640 module! pid: " + String(pid));
+	// else
+	// 	Serial.println("OV2640 detected.");
+
+
+	// //Change to JPEG capture mode and initialize the OV2640 module
+	// myCAM.set_format(JPEG);
+	// myCAM.InitCAM();
+
+	// setCamResolution(resolution);
+
+	// myCAM.clear_fifo_flag();
+
+  // Dir dir = SPIFFS.openDir("/pics");
+	// while (dir.next()) {
+	// 	fileCount++;
+	// }
+
+	// FSInfo fs_info;
+	// SPIFFS.info(fs_info);
+
+	// fileTotalKB = (int)fs_info.totalBytes;
+	// fileUsedKB = (int)fs_info.usedBytes;
 }
 
 void setup_wifi(){
@@ -164,6 +294,129 @@ void reconnect(){
   }
 }
 
+
+// /////////////////////////////////////////////////
+// //   Updates Properties file with resolution  ///
+// /////////////////////////////////////////////////
+// void updateDataFile()
+// {
+
+// 	File f = SPIFFS.open(fName, "w");
+// 	if (!f) {
+// 		Serial.println("prop file open failed");
+// 	}
+// 	else
+// 	{
+// 		Serial.println("====== Writing to prop file =========");
+
+// 		f.println(resolution);
+// 		Serial.println("Data file updated");
+// 		f.close();
+// 	}
+
+// }
+
+// ///////////////////////////////////////////
+// //    Saves captured image to memory     //
+// ///////////////////////////////////////////
+// void myCAMSaveToSPIFFS() {
+
+//   // as file space is used, capturing images will get slower. At a certain point, the images will become distored
+//   // or they will not save at all due to lack of space. To avoid this we set a limit and allow some free space to remain
+// 	if ((fileTotalKB - fileUsedKB) < fileSpaceOffset)
+// 	{
+// 		String maxStr = "====== Maximum Data Storage Reached =========";
+// 		Serial.println(maxStr);
+// 		errMsg = maxStr;
+// 		return;
+// 	}
+
+// 	String str;
+// 	byte buf[256];
+// 	static int i = 0;
+
+// 	static int n = 0;
+// 	uint8_t temp, temp_last;
+
+// 	//  File file;
+// 	//Flush the FIFO
+// 	myCAM.flush_fifo();
+// 	//Clear the capture done flag
+// 	myCAM.clear_fifo_flag();
+// 	//Start capture
+// 	myCAM.start_capture();
+
+// 	while (!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
+// 	Serial.println("File Capture Done!");
+
+// 	fileCount++;
+
+// 	str = "/pics/" + String(fileCount)  + ".jpg";
+
+// 	File f = SPIFFS.open(str, "w");
+// 	if (!f) {
+// 		Serial.println("prop file open failed");
+// 	}
+// 	else
+// 	{
+// 		Serial.println(str);
+// 	}
+
+
+// 	i = 0;
+// 	myCAM.CS_LOW();
+// 	myCAM.set_fifo_burst();
+// 	#if !(defined (ARDUCAM_SHIELD_V2) && defined (OV2640_CAM))
+// 		SPI.transfer(0xFF);
+// 	#endif
+// 	//Read JPEG data from FIFO
+// 	while ( (temp != 0xD9) | (temp_last != 0xFF)) {
+// 		temp_last = temp;
+// 		temp = SPI.transfer(0x00);
+
+// 		//Write image data to buffer if not full
+// 		if ( i < 256)
+// 		buf[i++] = temp;
+// 		else {
+// 		//Write 256 bytes image data to file
+// 		myCAM.CS_HIGH();
+// 		f.write(buf , 256);
+// 		i = 0;
+// 		buf[i++] = temp;
+// 		myCAM.CS_LOW();
+// 		myCAM.set_fifo_burst();
+// 		}
+// 		//delay(0);
+// 	}
+
+// 	//Write the remain bytes in the buffer
+// 	if (i > 0) {
+// 		myCAM.CS_HIGH();
+// 		f.write(buf, i);
+// 	}
+// 	//Close the file
+// 	f.close();
+// 	Serial.println("CAM Save Done!");
+// }
+
+// ///////////////////////////////////////////////////////
+// //   deletes all files in the /pics directory        //
+// ///////////////////////////////////////////////////////
+// void clearData(){
+// 	errMsg = "======  Data Storage Cleared =========";
+// 	Dir dir = SPIFFS.openDir("/pics");
+// 	while (dir.next()) {
+// 		SPIFFS.remove(dir.fileName());
+// 	}
+
+// 	fileCount = 0;
+// 	fileTotalKB = 0;
+// 	fileUsedKB = 0;
+
+// 	handleNotFound();
+// }
+
+
 void loop() {
   if(!client.connected()){
     reconnect();
@@ -185,6 +438,7 @@ void loop() {
         blinking = blinking ? 0 : 1;
         client.subscribe("esiot_out");
         char message[60];
+        //myCAMSaveToSPIFFS();
         String json_mex = "{\"message\":\"banana\",\"name\":\"Glass\",\"type\":\"" + GARBAGE_TYPE + "\"}";
         json_mex.toCharArray(message, json_mex.length()+1);
         client.publish("esiot_in", message);
