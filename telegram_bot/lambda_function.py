@@ -56,7 +56,7 @@ def lambda_handler(event, context):
         )
         
         # restituisco l'esito
-        bot.sendMessage(msg['from']['id'], response)
+        bot.sendMessage(msg['from']['id'], 'Trash can opens!' if response['result'] else 'Wrong trash can, this is {}'.format(response['decision']))
         
         # reset dello shadow
         shadow = iot_client.update_thing_shadow(

@@ -64,8 +64,9 @@ def lambda_handler(event, context):
         #save record to db
         table.put_item(Item=item)
         
+        result = '+' if decision == event['type'] else '-'
         #publish the result of the evaluation through MQTT
-        iot.publish(topic=RESPONSE_TOPIC, payload= json.dumps({'assigned_class' : decision}))
+        iot.publish(topic=RESPONSE_TOPIC, payload= result)
         
     except:
         decision = event['name']
