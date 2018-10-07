@@ -8,7 +8,8 @@
                 "dynamodb:PutItem",
                 "iot:Publish",
                 "logs:*",
-                "s3:PutObject"
+                "s3:PutObject",
+                "rekognition:DetectLabels"
             ],
             "Resource": "*"
         }
