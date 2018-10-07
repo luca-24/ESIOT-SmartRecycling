@@ -7,8 +7,8 @@ import AWS from 'aws-sdk'
 
 AWS.config.update({
 	region: 'eu-west-1',
-	accessKeyId:  "AKIAIJCCB6PA2DT33UOQ",
- 	secretAccessKey: "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",
+	accessKeyId:  "",
+ 	secretAccessKey: "",
 });
 
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
