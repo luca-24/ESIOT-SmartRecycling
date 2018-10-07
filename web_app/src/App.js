@@ -11,6 +11,8 @@ AWS.config.update({
  	secretAccessKey: "",
 });
 
+var table_name = "Garbage_items"
+
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 var entity = []
@@ -44,7 +46,7 @@ function getLabels(today){
 function evaluatePic(n, result, element){
 	delete entity[n].state.listItems[element.item_id.N]
 	var params = {
-		TableName: "Garbage_items",
+		TableName: table_name,
 		Key: {
 			"item_id": {N: element.item_id.N}
 		},
@@ -97,7 +99,7 @@ class MyChart extends Component{
 
 	retrieveData(n){
 		var params = {
-			TableName: "Garbage_items",
+			TableName: table_name,
 		};
 		
 		ddb.scan(params, function(err, data) {

@@ -216,6 +216,7 @@ void loop() {
         blinking = 0;
         digitalWrite(green_led, LOW);
         digitalWrite(red_led, LOW);
+        digitalWrite(relay, LOW);
         break;
       case 1:
         Serial.println("PROCESSING");
@@ -226,6 +227,7 @@ void loop() {
         blinking = 0;
         digitalWrite(green_led, HIGH);
         digitalWrite(red_led, LOW);
+        digitalWrite(relay, HIGH);
         break;
       case 3:
         Serial.println("REJECTED");

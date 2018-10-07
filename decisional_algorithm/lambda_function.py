@@ -10,6 +10,9 @@ from decimal import *
 # s3 bucket
 BUCKET_NAME = os.environ['BUCKET_NAME']
 
+# dynamo table
+TABLE = os.environ['TABLE']
+
 # iot topic for responses
 RESPONSE_TOPIC = os.environ['RESPONSE_TOPIC']
 
@@ -45,8 +48,8 @@ def lambda_handler(event, context):
         #call the decison algorithm function to determine the type of garbage
         decision = decision_algorithm.classify_object(response['Labels'])
         
-        #save record to db
-        table = dynamodb.Table('Garbage_items')
+        # create a table object
+        table = dynamodb.Table(TABLE)
         
         #for every evaluation, we save the id (determined by the time), the filename, the labels returned by Rekognition and the class assigned
         #by the decision algorithm.
@@ -58,7 +61,7 @@ def lambda_handler(event, context):
                 'assigned_class' : decision,
         }
         
-        
+        #save record to db
         table.put_item(Item=item)
         
         #publish the result of the evaluation through MQTT
