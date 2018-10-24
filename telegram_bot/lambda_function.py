@@ -9,6 +9,7 @@ import requests
 
 TOKEN = os.environ['TOKEN']
 THING_NAME = os.environ['THING_NAME']
+BOT_API = os.environ['BOT_API']
 
 bot = telepot.Bot(TOKEN)
 iot_client = boto3.client('iot-data')
@@ -41,7 +42,7 @@ def lambda_handler(event, context):
         )
 
         # invoco l'API
-        response = requests.post('https://qkj9pbrkf9.execute-api.eu-west-1.amazonaws.com/test', json={'message': encoded_string, 'type': 'Paper'}).json()
+        response = requests.post(BOT_API, json={'message': encoded_string, 'type': 'Paper'}).json()
         
         # in base al risultato aggiorno lo shadow
         shadow = iot_client.update_thing_shadow(
